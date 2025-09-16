@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import Dashboard from "@/components/Dashboard";
 import DiagnosisAssistant from "@/components/DiagnosisAssistant";
 import HealthRecords from "@/components/HealthRecords";
+import ChatAssistant from "@/components/ChatAssistant";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState("dashboard");
@@ -14,12 +15,7 @@ const Index = () => {
       case "records":
         return <HealthRecords />;
       case "chat":
-        return (
-          <div className="max-w-4xl mx-auto p-4 text-center">
-            <h2 className="text-2xl font-bold mb-4">Chat Assistant</h2>
-            <p className="text-muted-foreground">Multilingual patient-doctor chat assistant coming soon...</p>
-          </div>
-        );
+        return <ChatAssistant />;
       case "insurance":
         return (
           <div className="max-w-4xl mx-auto p-4 text-center">

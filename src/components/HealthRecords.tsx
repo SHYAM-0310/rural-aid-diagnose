@@ -140,19 +140,49 @@ const HealthRecords = () => {
             <CardDescription>Add prescription, lab report, or medical document</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+            <input 
+              type="file" 
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" 
+              multiple 
+              className="hidden" 
+              id="file-upload"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                files.forEach(file => {
+                  const newRecord = {
+                    id: Date.now() + Math.random(),
+                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    type: file.type.includes('pdf') ? 'Lab Report' : 
+                          file.type.includes('image') ? 'Imaging' : 'Hospital Record',
+                    date: new Date().toISOString().split('T')[0],
+                    doctor: 'To be assigned',
+                    hospital: 'Uploaded by patient',
+                    tags: ['uploaded', 'new'],
+                    status: 'recent'
+                  };
+                  setRecords(prev => [newRecord, ...prev]);
+                });
+              }}
+            />
+            <label htmlFor="file-upload" className="cursor-pointer">
               <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground mb-2">
                 Drag & drop files here or click to browse
               </p>
               <p className="text-xs text-muted-foreground">
-                Supports PDF, JPG, PNG (Max 10MB)
+                Supports PDF, JPG, PNG, DOC (Max 10MB)
               </p>
-            </div>
-            <Button variant="primary" className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Select Files
-            </Button>
+            </label>
+          </div>
+          <Button 
+            variant="primary" 
+            className="w-full" 
+            onClick={() => document.getElementById('file-upload')?.click()}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Select Files
+          </Button>
           </CardContent>
         </Card>
 
@@ -274,16 +304,36 @@ const HealthRecords = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => alert(`Viewing ${record.title}`)}
+                    >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => alert(`Downloading ${record.title}`)}
+                    >
                       <Download className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => alert(`QR Code for ${record.title} generated! Share with doctors.`)}
+                    >
                       <QrCode className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => {
+                        if (confirm(`Delete ${record.title}?`)) {
+                          setRecords(prev => prev.filter(r => r.id !== record.id));
+                        }
+                      }}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -309,10 +359,17 @@ const HealthRecords = () => {
               Create a secure, time-limited link to share selected records with healthcare providers
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" className="flex-1">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => alert('Select up to 5 records to share securely')}
+              >
                 Select Records to Share
               </Button>
-              <Button variant="primary">
+              <Button 
+                variant="primary"
+                onClick={() => alert('Secure QR code generated! Valid for 24 hours. Share with your doctor.')}
+              >
                 Generate Secure QR Code
               </Button>
             </div>
